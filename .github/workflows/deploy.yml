@@ -1,28 +1,21 @@
-name: Dynamic Orchestration Pipeline
+name: Test Auth Pipeline
 
 on:
-  workflow_dispatch:
-
   repository_dispatch:
-    types:
-      - deploy_to_cloudflare
+    types: [deploy_to_cloudflare]
 
 jobs:
-  test-auth-token:
+  test-auth:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Test Auth Token
+      - name: Validate Authentication Token
         env:
           AUTH_TOKEN: ${{ github.event.client_payload.auth_token }}
         run: |
-          echo "Test action started"
-
           if [ -z "$AUTH_TOKEN" ]; then
-            echo "AUTH_TOKEN was not received"
+            echo "❌ unauthorized: No auth token provided!"
             exit 1
+          else
+            echo "✅ authorized: Token successfully received."
           fi
-
-          echo "AUTH_TOKEN was received"
-          echo "Token length: ${#AUTH_TOKEN}"
-          echo "Token test successful"
