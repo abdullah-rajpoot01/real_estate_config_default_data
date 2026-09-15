@@ -4,7 +4,8 @@ on:
   workflow_dispatch:
 
   repository_dispatch:
-    types: [deploy_to_cloudflare]
+    types:
+      - deploy_to_cloudflare
 
 jobs:
   test-auth-token:
@@ -14,16 +15,14 @@ jobs:
       - name: Test Auth Token
         env:
           AUTH_TOKEN: ${{ github.event.client_payload.auth_token }}
-
         run: |
-          echo "🚀 Test action started..."
+          echo "Test action started"
 
           if [ -z "$AUTH_TOKEN" ]; then
-            echo "❌ AUTH_TOKEN was not received."
+            echo "AUTH_TOKEN was not received"
             exit 1
           fi
 
-          echo "✅ AUTH_TOKEN was received."
+          echo "AUTH_TOKEN was received"
           echo "Token length: ${#AUTH_TOKEN}"
-
-          echo "🎉 Token successfully passed to GitHub Actions."
+          echo "Token test successful"
