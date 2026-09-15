@@ -1,4 +1,3 @@
-```yaml
 name: Dynamic Orchestration Pipeline
 
 on:
@@ -28,4 +27,3 @@ jobs:
           echo "Token length: ${#AUTH_TOKEN}"
 
           echo "🎉 Token successfully passed to GitHub Actions."
-```
