@@ -1,6 +1,7 @@
 name: Test Auth Pipeline
 
 on:
+  # This listens for the API trigger
   repository_dispatch:
     types: [deploy_to_cloudflare]
 
@@ -11,6 +12,7 @@ jobs:
     steps:
       - name: Validate Authentication Token
         env:
+          # Reads the auth_token key from the client_payload object
           AUTH_TOKEN: ${{ github.event.client_payload.auth_token }}
         run: |
           if [ -z "$AUTH_TOKEN" ]; then
